@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soldes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa; /* Légèrement gris pour un contraste agréable */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+            padding: 20px;
+        }
+
+        .section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .telegram-section {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .ecobank-section {
+            border: 1px solid #007BFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .balance-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .balance-header {
+            background-color: #007BFF;
+            color: white;
+            font-size: 20px;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .claim-header {
+            background-color: #FF6B6B;
+        }
+
+        .balance-info {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #555;
+        }
+
+        .footer-buttons {
+            position: fixed;
+            bottom: 10px;
+            width: calc(100% - 40px);
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #FFFFFF;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-buttons button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .btn-center {
+            background-color: #FF0000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            font-size: 20px;
+        }
+
+        .popup-section {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            width: 80%;
+            max-width: 400px;
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .popup-section button {
+            background-color: #FFF;
+            color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px;
+            font-size: 14px;
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="section email-section" id="email">Chargement de l'email...</div>
+
+<div class="section telegram-section">
+    <h3>Groupe officiel Telegram</h3>
+    <a href="https://t.me/votre_groupe_telegram" style="color: white;">Rejoignez notre groupe</a>
+</div>
+
+<div class="section ecobank-section">
+    <h3>Ecobank</h3>
+</div>
+
+<!-- Conteneur pour les soldes -->
+<div class="section balances-wrapper">
+    <div class="balance-container">
+        <div class="balance-header">Solde de Dépôt</div>
+        <div class="balance-info" id="deposit-balance">Chargement...</div>
+    </div>
+    
+    <div class="balance-container">
+        <div class="balance-header claim-header">Solde de Réclamation</div>
+        <div class="balance-info" id="claim-balance">Chargement...</div>
+    </div>
+</div>
+
+<div id="popup-section" class="popup-section">
+    <a href="recharge.html"><button>Recharge</button></a>
+    <a href="retrait.html"><button>Retrait</button></a>
+    <a href="lier_portefeuille.html"><button>Compte</button></a>
+    <a href="historique.html"><button>Historique</button></a>
+    <a href="star.html"><button>Statistique</button></a>
+</div>
+
+<div class="footer-buttons">
+    <a href="balance.html"><button>Dashboard</button></a>
+    <a href="historique_retrait.html"><button>Historique</button></a>
+    <button class="btn-center" onclick="togglePopup()">Ⓜ️</button>
+    <a href="carte.html"><button>Ma carte</button></a>
+    <a href="https://example.com/parametres"><button>Équipe</button></a>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPQvlxIjvJPkMZQ4qElkHla_xQ5QiZfFs",
+        authDomain: "paris-3df9f.firebaseapp.com",
+        databaseURL: "https://paris-3df9f-default-rtdb.firebaseio.com",
+        projectId: "paris-3df9f",
+        storageBucket: "paris-3df9f.appspot.com",
+        messagingSenderId: "365107415196",
+        appId: "1:365107415196:web:4c0021baec5a51a0f50559"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            const userRef = ref(database, 'users/' + user.uid);
+            const snapshot = await get(userRef);
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                document.getElementById("deposit-balance").innerText = parseFloat(userData.depositBalance || 0).toFixed(2) + " FCFA";
+                document.getElementById("claim-balance").innerText = parseFloat(userData.claimBalance || 0).toFixed(2) + " FCFA";
+                document.getElementById("email").innerText = user.email;
+            } else {
+                document.getElementById("deposit-balance").innerText = "Aucun solde trouvé.";
+                document.getElementById("claim-balance").innerText = "Aucun solde trouvé.";
+            }
+        } else {
+            document.getElementById("deposit-balance").innerText = "Veuillez vous connecter.";
+            document.getElementById("claim-balance").innerText = "Veuillez vous connecter.";
+        }
+    });
+</script>
+
+<script>
+    function togglePopup() {
+        const popup = document.getElementById("popup-section");
+        popup.style.display = popup.style.display === "none" || popup.style.display === "" ? "block" : "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("popup-section").style.display = "none";
+    });
+</script>
+</body>
+</html>
